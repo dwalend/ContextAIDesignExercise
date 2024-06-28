@@ -1,2 +1,2 @@
-# ContextAIDesignExcercise
-Context AI Design Excercise
+# ContextAIDesignExercise
+Context AI Design Exercise
