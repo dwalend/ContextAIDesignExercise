@@ -4,7 +4,7 @@ Context AI Design Exercise
 
 Approach
 
-I'll start by reading through the problem and sleeping on it. I'll work progressively over the end of this week and the beginning of next week as I have pockets of free time. I'll eventually write code to be run with scalacli. (The instructions say pseudocode is fine, but then ask to have it run from the command line, which means it's real code.)
+I'll start by reading through the problem and sleeping on it. I'll work progressively over the end of this week and the beginning of next week as I have pockets of free time. I'll eventually write code to be run with scala-cli. (The instructions say pseudocode is fine, but then ask to have it run from the command line, which means it's real code.)
          
 Running the prototype
 
@@ -51,6 +51,8 @@ I set up a simple scala CLI project. This will likely be a one-file prototype.
 
 I'm not sure what I want to say at the level of a UML diagram. There's not a lot going on. Maybe I make something to wave my hands at when I get to the end.
 
+Finally carved some code Sunday afternoon while waiting for the kiddo.
+
 
 
 
@@ -60,7 +62,7 @@ I get to choose the data structures I'll be using, and don't have to worry about
 
 Rules engines like DROOLS exist which neatly solve this sort of problem. I'm assuming that's out-of-bounds for the exercise, but is worth discussing. If something already available will not work then why is this problem special? 
 
-I'm assuming the sales people and customer are letting me encode the rules - or know some Scala. Even thought that that last clause may sound crazy Wildfire had laypeople writing rules using organic - and incomplete - domain-specific languages at the heart of their business plans. (I decided not to go to a start-up that was headed down that same path in an interview cycle.) Using a subset of a fully-grown language would solve a significant part of the problem. That's the basic model for Scala DSLs. If you're up for a 30-minute tangent - my next NE Scala talk - ask me about my DSL thesis.
+I'm assuming the sales people and customer are letting me encode the rules - or know some Scala. Even thought that that last clause may sound crazy Wildfire had laypeople writing rules using organic - and incomplete - domain-specific languages at the heart of their business plans. (I decided not to go to a start-up that was headed down that same path in an interview cycle.) Using a subset of a fully-grown language would solve a significant part of the problem. That's the basic model for Scala DSLs. If you're up for a 30-minute tangent - my next NE Scala talk - ask me about my DSL thesis. It's completely clear to me that the specified little scripting language is not going to be enough for anything of scale. 
 
 I want to have a long discussion about how these rules are interpreted and how that might be useful for the customer. I'm having trouble imagining how this sort of score might be useful for anything beyond prizes for amusement park games.
                
@@ -68,7 +70,7 @@ I'm assuming the product set and rules set are both small enough to fit comforta
 
 The text description talks about String attributes, but the example and UML diagram use enumerated attribute and BLUE. I'll put together something that can support both.
 
-
+It's not clear what to do if a product doesn't have a given feature defined. I TODO
 
 ---
 

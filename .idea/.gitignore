@@ -1,5 +1,6 @@
 # Default ignored files
+/shelf/
 /workspace.xml
-/.idea
-/src/.bsp
-/src/.scala-build
+/src/.scala-build/**
+/src/.bloop/**
+/src/.bsp/**
