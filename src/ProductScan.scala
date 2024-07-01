@@ -9,35 +9,42 @@ object AttributeKey {
   val price = AttributeKey("price")
 }
 
-trait Attribute(id:AttributeKey) {
+trait Attribute {
+  def id:AttributeKey
   type T
   def value:T
 }
 
 //these subclasses of Attribute are not going to be type-specific enough to save a mess, but it's really easy to make new ones that are. It'd be not terrible to write a parser of the example rule to build these.
-case class NumericAttribute(id:AttributeKey,value:Double) extends Attribute(id){
+case class NumericAttribute(id:AttributeKey,value:Double) extends Attribute{
   type T = Double
 }
 
-case class BooleanAttribute(id:AttributeKey,value:Boolean) extends Attribute(id){
+case class BooleanAttribute(id:AttributeKey,value:Boolean) extends Attribute{
   type T = Boolean
 }
 
 //Strings for now. Type safe enumerations are really easy, and you don't want them all mixed together anyway. BLUE and XXLARGE shouldn't be mixed.
-case class EnumeratedAttribute(id:AttributeKey,value:String) extends Attribute(id){
+case class EnumeratedAttribute(id:AttributeKey,value:String) extends Attribute{
   type T = String
 }
 
 case class Product(id:ProductId,features:Map[AttributeKey,Attribute]) {
+  //todo check that every product has a name and price
   def name = features(AttributeKey.name)
 
   def price: Double = features.get(AttributeKey.price).collect { case na: NumericAttribute => na }.get.value
 }
 
+object Product {
+  def apply(id:ProductId,features:Seq[Attribute]):Product = {
+    new Product(id,features.map(f => f.id -> f).toMap)
+  }
+}
+
 //Conditions will look like
 //Condition(AttributeKey.price,case price:NumericAttribute => price.value < 238.9)
 
-//todo can that be Unit?
 case class Condition(forKey:AttributeKey,pf:PartialFunction[Attribute,Boolean]) {
 
   def test(product:Product):Boolean = {
@@ -63,12 +70,7 @@ case class Rule(fullScore:Double,conditions:Seq[Condition]) {
 
 object Rule {
 
-  def apply(string:String):Rule = ???
-
   /**
-   *
-   * @param rules
-   * @param products
    * @return total and average price of all the products that pass the threshold
    */
   def scanProducts(rules:Seq[Rule],products:Iterable[Product],threshold:Double = 50.0):(Double,Double) = {
@@ -85,21 +87,36 @@ object Rule {
  * Extensions to support inlining the rules syntax. Seems OK for a prototype but not for a real system.
  */
 extension (sc: StringContext) {
-  def rule(args: Any*): Rule = Rule(sc.toString)
+  def rule(args: Any*): Either[String,Rule] = {
+    Left("I'm putting my energy into explaining why this is a bad path to go down instead of demonstrating how tidy but brittle code could look")
+  }
+
+  def aid(args: Any*): AttributeKey = new AttributeKey(sc.toString)
 }
 
 def main(args:Array[String]):Unit = {
+  val exampleRule = rule"color == BLUE && price < 17.75 && quantity > 750  100"
+
   val handEncodedRule = Rule(100,Seq(
     Condition.create("color",{case ea:EnumeratedAttribute => ea.value == "BLUE"}),
     Condition(AttributeKey.price,{case na:NumericAttribute => na.value < 17.75}),
     Condition.create("quantity",{case na:NumericAttribute => na.value > 750}),
   ))
 
-  val blueCheapBulkThing = Product(new ProductId(1),Map(???))
+  val rules = Seq(handEncodedRule)
 
+  val blueCheapBulkThing = Product(new ProductId(1),Seq(
+    EnumeratedAttribute(aid"name","Cheap Blue Bulk Thing"),
+    NumericAttribute(aid"price",4.95),
+    EnumeratedAttribute(aid"color","BLUE"),
+    NumericAttribute(aid"quantity",2000),
+    EnumeratedAttribute(aid"size","M"),
+    BooleanAttribute(aid"GitD",false)
+  ))
 
-
-  val exampleRule = rule"color == BLUE && price < 17.75 && quantity > 750  100"
+  val products = Seq(blueCheapBulkThing)
+  val result = Rule.scanProducts(rules,products,50.0)
+  println(result)
 }
 
 
