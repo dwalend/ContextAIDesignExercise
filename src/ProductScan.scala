@@ -31,16 +31,16 @@ case class EnumeratedAttribute(id:AttributeKey,value:String) extends Attribute{
   type T = String
 }
 
-case class Product(id:ProductId,features:Map[AttributeKey,Attribute]) {
+case class Product(id:ProductId, attributes:Map[AttributeKey,Attribute]) {
   //todo check that every product has a name and price
-  def name = features(AttributeKey.name)
+  def name = attributes(AttributeKey.name)
 
-  def price: Double = features.get(AttributeKey.price).collect { case na: NumericAttribute => na }.get.value
+  def price: Double = attributes.get(AttributeKey.price).collect { case na: NumericAttribute => na }.get.value
 }
 
 object Product {
-  def apply(id:ProductId,features:Seq[Attribute]):Product = {
-    new Product(id,features.map(f => f.id -> f).toMap)
+  def apply(id:ProductId, attributes:Seq[Attribute]):Product = {
+    new Product(id,attributes.map(f => f.id -> f).toMap)
   }
 }
 
@@ -50,8 +50,8 @@ object Product {
 case class Condition(forKey:AttributeKey,pf:PartialFunction[Attribute,Boolean]) {
 
   def test(product:Product):Boolean = {
-    //if a product doesn't have a feature then false
-    product.features.get(forKey).collect{pf}.getOrElse(false)
+    //if a product doesn't have an attribute of the right id or type then false
+    product.attributes.get(forKey).collect{pf}.getOrElse(false)
   }
 }
 

@@ -53,7 +53,9 @@ I'm not sure what I want to say at the level of a UML diagram. There's not a lot
 
 Finally carved some code Sunday afternoon while waiting for the kiddo.
 
+Got it running over lunch Monday
 
+Added a UML diagram. It's not very complex, but that's probably for the best.
 
 
 Assumptions 
