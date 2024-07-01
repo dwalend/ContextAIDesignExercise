@@ -71,26 +71,27 @@ object Rule {
    */
   def scanProducts(rules:Seq[Rule],products:Iterable[Product],threshold:Double = 50.0):(Double,Double) = {
     val (sum,length) = products.map{ p =>
-        p -> rules.map(r => r.findScore(p)).sum  //todo reread the problem - double-check this
+        p -> rules.map(r => r.findScore(p)).sum
     }.filter(_._2 > threshold).
       map(_._1.price). //just need price from here on out
-      foldLeft((0.0,0)){(soFar,price) => ((soFar._1 + price),(soFar._2 + 1))} //gather the total and the length in one pass
+      foldLeft((0.0,0)){(soFar,price) => ((soFar._1 + price),(soFar._2 + 1))} //gather the total and the length in one pass, ready for streaming
     (sum,sum/length)
   }
 }
 
 /**
- * Extensions to support inlining the rules syntax. Seems OK for a prototype but not for a real system.
+ * Extensions to support quick construction from strings.
  */
 extension (sc: StringContext) {
   def rule(args: Any*): Either[String,Rule] = {
-    Left("I'm putting my energy into explaining why this is a bad path to go down instead of demonstrating how tidy but brittle code could look")
+    Left("I'm putting my energy into explaining why this is a bad path to go down instead of demonstrating how tidy but brittle code could be")
   }
 
   def aid(args: Any*): AttributeKey = new AttributeKey(sc.parts.head)
 }
 
 def main(args:Array[String]):Unit = {
+  //I decided not to parse the rules. Unless there's already a large library of them then it's a very expensive way forward.
   val exampleRule = rule"color == BLUE && price < 17.75 && quantity > 750  100"
 
   val handEncodedRule = Rule(100,Seq(
@@ -117,23 +118,22 @@ def main(args:Array[String]):Unit = {
     NumericAttribute(aid"price", 4.95),
     EnumeratedAttribute(aid"color", "GREEN"),
     NumericAttribute(aid"quantity", 2000),
-    EnumeratedAttribute(aid"size", "M"),
+    EnumeratedAttribute(aid"size", "L"),
     BooleanAttribute(aid"GitD", true)
   ))
 
   //does not match
-  val redExpensiveBulkThing = Product(new ProductId(1), Seq(
+  val redExpensiveRareThing = Product(new ProductId(1), Seq(
     EnumeratedAttribute(aid"name", "Red Expensive Bulk Thing"),
     NumericAttribute(aid"price", 945.3),
     EnumeratedAttribute(aid"color", "RED"),
     NumericAttribute(aid"quantity", 3),
     EnumeratedAttribute(aid"size", "M"),
-    BooleanAttribute(aid"GitD", false)
   ))
 
-  val products = Seq(blueCheapBulkThing,greenCheapBulkThing,redExpensiveBulkThing)
-  val result = Rule.scanProducts(rules,products,50.0)
-  println(result)
+  val products = Seq(blueCheapBulkThing,greenCheapBulkThing,redExpensiveRareThing)
+  val (total,average) = Rule.scanProducts(rules,products,50.0)
+  println(s"total: $total, average: $average")
 }
 
 
