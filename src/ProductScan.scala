@@ -2,7 +2,9 @@ import scala.collection.immutable.*
 
 class ProductId(val v:Int) extends AnyVal
 
-class AttributeKey(val id:String) extends AnyVal
+class AttributeKey(val id:String) extends AnyVal {
+  override def toString: String = s"AttributeKey($id)"
+}
 
 object AttributeKey {
   val name = AttributeKey("name")
@@ -53,12 +55,6 @@ case class Condition(forKey:AttributeKey,pf:PartialFunction[Attribute,Boolean]) 
   }
 }
 
-object Condition {
-  def create(keyString:String,pf:PartialFunction[Attribute,Boolean]):Condition = {
-    Condition(AttributeKey(keyString), pf)
-  }
-}
-
 case class Rule(fullScore:Double,conditions:Seq[Condition]) {
   def findScore(product:Product):Double = {
     val total = conditions.map { condition =>
@@ -91,20 +87,21 @@ extension (sc: StringContext) {
     Left("I'm putting my energy into explaining why this is a bad path to go down instead of demonstrating how tidy but brittle code could look")
   }
 
-  def aid(args: Any*): AttributeKey = new AttributeKey(sc.toString)
+  def aid(args: Any*): AttributeKey = new AttributeKey(sc.parts.head)
 }
 
 def main(args:Array[String]):Unit = {
   val exampleRule = rule"color == BLUE && price < 17.75 && quantity > 750  100"
 
   val handEncodedRule = Rule(100,Seq(
-    Condition.create("color",{case ea:EnumeratedAttribute => ea.value == "BLUE"}),
+    Condition(aid"color",{case ea:EnumeratedAttribute => ea.value == "BLUE"}),
     Condition(AttributeKey.price,{case na:NumericAttribute => na.value < 17.75}),
-    Condition.create("quantity",{case na:NumericAttribute => na.value > 750}),
+    Condition(aid"quantity",{case na:NumericAttribute => na.value > 750}),
   ))
 
   val rules = Seq(handEncodedRule)
 
+  //perfect match
   val blueCheapBulkThing = Product(new ProductId(1),Seq(
     EnumeratedAttribute(aid"name","Cheap Blue Bulk Thing"),
     NumericAttribute(aid"price",4.95),
@@ -114,7 +111,27 @@ def main(args:Array[String]):Unit = {
     BooleanAttribute(aid"GitD",false)
   ))
 
-  val products = Seq(blueCheapBulkThing)
+  //good enough
+  val greenCheapBulkThing = Product(new ProductId(1), Seq(
+    EnumeratedAttribute(aid"name", "Cheap Green Bulk Thing"),
+    NumericAttribute(aid"price", 4.95),
+    EnumeratedAttribute(aid"color", "GREEN"),
+    NumericAttribute(aid"quantity", 2000),
+    EnumeratedAttribute(aid"size", "M"),
+    BooleanAttribute(aid"GitD", true)
+  ))
+
+  //does not match
+  val redExpensiveBulkThing = Product(new ProductId(1), Seq(
+    EnumeratedAttribute(aid"name", "Red Expensive Bulk Thing"),
+    NumericAttribute(aid"price", 945.3),
+    EnumeratedAttribute(aid"color", "RED"),
+    NumericAttribute(aid"quantity", 3),
+    EnumeratedAttribute(aid"size", "M"),
+    BooleanAttribute(aid"GitD", false)
+  ))
+
+  val products = Seq(blueCheapBulkThing,greenCheapBulkThing,redExpensiveBulkThing)
   val result = Rule.scanProducts(rules,products,50.0)
   println(result)
 }
