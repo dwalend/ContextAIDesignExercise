@@ -24,6 +24,21 @@ To run the prototype:
 scala-cli run src/ProductScan.scala
 ```
 
+Assumptions
+
+I get to choose the data structures I'll be using, and don't have to worry about data plumbing. Normally I would expect a lot of structures to describe the products the company is selling - overengineered standards like RDFs https://www.w3.org/RDF/ or (more likely) organic systems like Amazon's Product Data JSON  https://jsonstudio.io/samples/amazon-product-data-response-json . Data plumbing would be the lion's share of the work, unless it were eclipsed by data clean-up. I'm assuming that working with existing data structures is not the interesting part of this exercise.
+
+Rules engines like DROOLS exist which neatly solve this sort of problem. I'm assuming that's out-of-bounds for the exercise, but would be worth discussing.
+
+I'm assuming the sales people and customer are letting me encode the rules or know some Scala. That last clause may sound crazy but is better than trying to build something ad hoc. Wildfire had laypeople writing rules using organic - and incomplete - domain-specific languages at the heart of their business plans. I decided not to go to a start-up that was headed down that same path in an interview cycle. The approach is not viable despite its appeal. Using a subset of a fully-grown language would eliminate the problems with organic growth. That's the basic model for Scala DSLs. If you're up for a 30-minute tangent - maybe my next NE Scala talk - ask me about my DSL thesis.
+
+I want to have a long discussion about how these rules are interpreted and how that might be useful for the customer. I'm having trouble imagining how this sort of score might be useful for anything beyond prizes for amusement park games.
+
+I'm assuming the products and rules are both small enough to fit comfortably in memory. I'm going to write the product scan so that it is just iterating though some map transformations and then summed and averaged as a gather at the end. If the products don't fit then streaming or even spreading it out and using Spark would not require much of a change.
+
+The text description talks about String attributes, but the example and UML diagram use enumerated attribute and BLUE. I'll put together something that can support both.
+
+It's not clear what to do if a product does not have a given feature defined. I decided to treat it as a failed condition.
 
 Journal
 
@@ -56,23 +71,6 @@ Carved some code Sunday afternoon while waiting for the kiddo.
 Got it tested over lunch Monday
 
 Added a UML diagram. It's not very complex, but that's probably for the best.
-
-
-Assumptions 
-                                       
-I get to choose the data structures I'll be using, and don't have to worry about data plumbing. Normally I would expect a lot of structures to describe the products the company is selling - overengineered standards like RDFs https://www.w3.org/RDF/ or (more likely) organic systems like Amazon's Product Data JSON  https://jsonstudio.io/samples/amazon-product-data-response-json . Data plumbing would be the lion's share of the work, unless it were eclipsed by data clean-up. I'm assuming that working with existing data structures is not the interesting part of this exercise.
-
-Rules engines like DROOLS exist which neatly solve this sort of problem. I'm assuming that's out-of-bounds for the exercise, but would be worth discussing. 
-
-I'm assuming the sales people and customer are letting me encode the rules or know some Scala. That last clause may sound crazy but is better than trying to build something ad hoc. Wildfire had laypeople writing rules using organic - and incomplete - domain-specific languages at the heart of their business plans. I decided not to go to a start-up that was headed down that same path in an interview cycle. The approach is not viable despite its appeal. Using a subset of a fully-grown language would eliminate the problems with organic growth. That's the basic model for Scala DSLs. If you're up for a 30-minute tangent - maybe my next NE Scala talk - ask me about my DSL thesis.  
-
-I want to have a long discussion about how these rules are interpreted and how that might be useful for the customer. I'm having trouble imagining how this sort of score might be useful for anything beyond prizes for amusement park games. 
-               
-I'm assuming the products and rules are both small enough to fit comfortably in memory. I'm going to write the product scan so that it is just iterating though some map transformations and then summed and averaged as a gather at the end. If the products don't fit then streaming or even spreading it out and using Spark would not require much of a change. 
-
-The text description talks about String attributes, but the example and UML diagram use enumerated attribute and BLUE. I'll put together something that can support both.
-
-It's not clear what to do if a product does not have a given feature defined. I decided to treat it as a failed condition.
 
 ---
 
