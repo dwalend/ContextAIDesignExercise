@@ -45,7 +45,7 @@ def main(args:Array[String]):Unit = {
 }
 
 /**
- * Extensions to support quick construction from strings.
+ * Extensions to support quick construction from strings - like   val price = aid"price"
  */
 extension (sc: StringContext) {
   /**
@@ -133,6 +133,6 @@ class AttributeKey(val id:String) extends AnyVal {
 }
 
 object AttributeKey {
-  val name = AttributeKey("name")
-  val price = AttributeKey("price")
+  val name = aid"name"
+  val price = aid"price"
 }
